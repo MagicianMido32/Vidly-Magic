@@ -1,0 +1,145 @@
+﻿@model Vidly.ViewModels.EditUserViewModel
+
+@{
+    ViewBag.Title = "Edit User";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Edit User</h2>
+
+@using (Html.BeginForm("Save", "UsersManagement"))
+{
+    @Html.AntiForgeryToken()
+
+    <h4>@Model.User.UserName</h4>
+    <hr />
+    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+    @Html.HiddenFor(model => model.User.Id)
+
+    <div class="container-fluid">
+        <div class="row">
+
+            <div class="first-half col-md-6">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.User.UserName)
+                    @Html.EditorFor(model => model.User.UserName, new { htmlAttributes = new { @class = "form-control" } })
+                    @Html.ValidationMessageFor(model => model.User.UserName, "", new { @class = "text-danger" })
+                </div>
+                <div class="form-group">
+                    @Html.LabelFor(model => model.User.DrivingLicense)
+                    @Html.EditorFor(model => model.User.DrivingLicense, new { htmlAttributes = new { @class = "form-control" } })
+                    @Html.ValidationMessageFor(model => model.User.DrivingLicense, "", new { @class = "text-danger" })
+                </div>
+
+                <div class="form-group">
+                    @Html.LabelFor(model => model.User.Phone)
+                    @Html.EditorFor(model => model.User.Phone, new { htmlAttributes = new { @class = "form-control" } })
+                    @Html.ValidationMessageFor(model => model.User.Phone, "", new { @class = "text-danger" })
+                </div>
+
+                <div class="form-group">
+                    @Html.LabelFor(model => model.User.Email)
+                    @Html.EditorFor(model => model.User.Email, new { htmlAttributes = new { @class = "form-control" } })
+                    @Html.ValidationMessageFor(model => model.User.Email, "", new { @class = "text-danger" })
+                </div>
+
+                <div class="form-group">
+                    @Html.LabelFor(model => model.User.PasswordHash)
+                    @Html.EditorFor(model => model.User.PasswordHash, new { htmlAttributes = new { @class = "form-control" } })
+                    @Html.ValidationMessageFor(model => model.User.PasswordHash, "", new { @class = "text-danger" })
+                </div>
+
+                <div class="form-group">
+                    @Html.LabelFor(model => model.User.SecurityStamp)
+                    @Html.EditorFor(model => model.User.SecurityStamp, new { htmlAttributes = new { @class = "form-control" } })
+                    @Html.ValidationMessageFor(model => model.User.SecurityStamp, "", new { @class = "text-danger" })
+                </div>
+            </div>
+
+            <div class="second-half col-md-6">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.User.PhoneNumber)
+                    @Html.EditorFor(model => model.User.PhoneNumber, new { htmlAttributes = new { @class = "form-control" } })
+                    @Html.ValidationMessageFor(model => model.User.PhoneNumber, "", new { @class = "text-danger" })
+                </div>
+
+                <div class="form-group">
+                    @Html.LabelFor(model => model.User.LockoutEndDateUtc)
+                    @Html.EditorFor(model => model.User.LockoutEndDateUtc, new { htmlAttributes = new { @class = "form-control" } })
+                    @Html.ValidationMessageFor(model => model.User.LockoutEndDateUtc, "", new { @class = "text-danger" })
+                </div>
+                <div class="form-group">
+                    @Html.LabelFor(model => model.User.AccessFailedCount)
+                    @Html.EditorFor(model => model.User.AccessFailedCount, new { htmlAttributes = new { @class = "form-control" } })
+                    @Html.ValidationMessageFor(model => model.User.AccessFailedCount, "", new { @class = "text-danger" })
+                </div>
+                <hr />
+                <div class="form-group">
+                    <div class="checkbox">
+                        <label>
+                            @Html.CheckBoxFor(model => model.User.EmailConfirmed) Email Confirmed?
+                        </label>
+                        @Html.ValidationMessageFor(model => model.User.EmailConfirmed, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="checkbox">
+                        <label>
+                            @Html.CheckBoxFor(model => model.User.PhoneNumberConfirmed) Phone Confirmed?
+                        </label>
+                        @Html.ValidationMessageFor(model => model.User.PhoneNumberConfirmed, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <div class="checkbox">
+                        <label>
+                            @Html.CheckBoxFor(model => model.User.TwoFactorEnabled) Two Factor Enabled?
+                        </label>
+                        @Html.ValidationMessageFor(model => model.User.TwoFactorEnabled, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <div class="checkbox">
+                        <label>
+                            @Html.CheckBoxFor(model => model.User.LockoutEnabled) Lockout Enabled ?
+                        </label>
+                        @Html.ValidationMessageFor(model => model.User.LockoutEnabled, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <div class="checkbox">
+                        <label>
+                            @Html.CheckBoxFor(model => model.CanManageMovies) Can Manage Movies ?
+                        </label>
+                        @Html.ValidationMessageFor(model => model.CanManageMovies, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <div class="checkbox">
+                        <label>
+                            @Html.CheckBoxFor(model => model.CanManageUsers) Can Manage Users ?
+                        </label>
+                        @Html.ValidationMessageFor(model => model.CanManageUsers, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <hr />
+
+    <div class="form-group">
+        <input type="submit" value="Save" class="btn btn-default" />
+    </div>
+}
+
+<div>
+    @Html.ActionLink("Back to List", "Index")
+</div>
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}

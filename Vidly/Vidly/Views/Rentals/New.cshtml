@@ -1,0 +1,162 @@
+﻿@model dynamic
+@{
+    ViewBag.Title = "New Rental";
+}
+
+<h2>New Rental</h2>
+
+<form id="newRental">
+    <div class="form-group">
+        <label>Customer</label>
+        <div class="tt-container">
+            @*we put required attribute so that jquery val understand it's required*@
+            @*data-rule-validCustomer="true" is for the custom validator*@
+            @*you need to add name attribute for jquery val to work*@
+            <input id="customer" name="customer" data-rule-validCustomer="true" required type="text" value="" class="form-control" />
+        </div>
+    </div>
+    <div class="form-group">
+        <label>Movie</label>
+        <div class="tt-container">
+            <input id="movie" name="movie" data-rule-atLeastOneMovie="true" type="text" value="" class="form-control" />
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-4">
+            <ul id="movies" class="list-group"></ul>
+        </div>
+    </div>
+    <button class="btn btn-primary">Submit</button>
+</form>
+@section scripts
+{
+    @Scripts.Render("~/bundles/jqueryval")
+    <script>
+
+        $(document).ready(function () {
+            //view model
+            var vm = {
+                //   customerId: "", hmm mosh didn't put it so I'm not
+                //The name of the property in the model should be exactly like the name of the Ajax object
+                //movieIds === movieIds ... moviesIds WRONG
+                movieIds: []
+            };
+            var customers = new Bloodhound(
+                {
+                    datumTokenizer: Bloodhound.tokenizers.obj.whitespace('name'), //tokenize customer's name
+                    queryTokenizer: Bloodhound.tokenizers.whitespace,
+                    remote:
+                    {
+                        url: '/api/customers?query=%QUERY',
+                        wildcard: '%QUERY'
+                    }
+                }
+            );
+            var movies = new Bloodhound(
+                {
+                    datumTokenizer: Bloodhound.tokenizers.obj.whitespace('name'), //tokenize movie's name
+                    queryTokenizer: Bloodhound.tokenizers.whitespace,
+                    remote:
+                    {
+                        url: '/api/movies?query=%QUERY',
+                        wildcard: '%QUERY'
+                    }
+                }
+            );
+
+            $('#customer').typeahead(
+                //typeahead configuration
+                {
+                    minLength: 3,
+                    highlight: true
+                },
+                //object to work on (bloodhound object)
+                {
+                    name: 'customers',
+                    display: 'name',
+                    source: customers
+                }).on("typeahead:select", function (e, customer) {
+                    vm.customerId = customer.id;
+
+                });
+            $('#movie').typeahead(
+                //typeahead configuration
+                {
+                    minLength: 3,
+                    highlight: true
+                },
+                //object to work on (bloodhound object)
+                {
+                    name: 'movies',
+                    display: 'name',
+                    source: movies
+                }).on("typeahead:select", function (e, movie) {
+                    $("#movies").append("<li class='list-group-item'>" + movie.name + "</li>");
+                    $("#movie").typeahead("val", "");
+                    vm.movieIds.push(movie.id);
+                });
+
+            //custom validation if customer don't exist
+            $.validator.addMethod("validCustomer",
+                function () {
+                    // alert(vm.customerId); customer Id can also be empty . so we used this condition
+                    //  return vm.customerId !== "" && vm.customerId !== 0; works too
+                    // if (vm.customerId === "") alert("Empty customer");
+                    return vm.customerId && vm.customerId !== 0;//must be true to proceeds
+                },
+                "Please select a valid customer.");
+
+            //custom validation if no movie selected
+            $.validator.addMethod("atLeastOneMovie",
+                function () {
+                    //alert(vm.movieIds.length);//0
+                    //alert(vm.movieIds.count);//undefined , Array.size()also
+
+                    return vm.movieIds.length > 0;
+                },
+                "Please select at least one movie.");
+
+            //use jquery val to validate our form
+            var validator = $("#newRental").validate({
+                submitHandler: function () {
+                    //  e.preventDefault(); // prevent normal html post used this with the submit button
+                    //e was the submit event , but here even if we passed e in the function , it will be the form not the event
+                    $.ajax({
+                        url: "/api/NewRentals",
+                        method: "post",
+                        data: vm
+                    })
+                        .done(function () {
+                            toastr.success("Rentals successfully recorded. ");
+
+                            //clearing the form, using typeahead
+                            //we can't use JQuery because we applied typeahead on it so we use type ahead
+                            $("#customer").typeahead("val", "");
+                            $("#movie").typeahead("val", "");
+
+                            //clear the list of movies
+                            $("#movies").empty();
+
+                            //empty the movies Array
+                            vm = { movieIds: [] };
+
+                            //reset the form using the validator object that the validate method returns
+                            validator.resetForm();
+                        })
+                        .fail(function (xhr) {
+                            var json = JSON.parse(xhr.responseText);
+                            toastr.error("Something unexpected happened : " + json["message"]);
+                        });
+                    //prevent normal html submit, the new approach
+                    return false;
+                }
+            });
+
+            //$("#newRental").submit(function (e) {
+            //here we put the submit before , but this way our form would be submitted
+            //even if it's not valid
+            //so we moved the entire logic to the submitHandler of Jquery val validate
+            //});
+        });
+    </script>
+}

@@ -1,0 +1,158 @@
+﻿@model dynamic
+@{
+    ViewBag.Title = "Return Rental";
+}
+
+<h2>Return Rental</h2>
+
+<form id="returnRental">
+    <div class="form-group">
+        <label>Customer</label>
+        <div class="tt-container">
+            @*we put required attribute so that jquery val understand it's required*@
+            @*data-rule-validCustomer="true" is for the custom validator*@
+            @*you need to add name attribute for jquery val to work*@
+            <input id="customer" name="customer" data-rule-validCustomer="true" required type="text" value="" class="form-control" />
+        </div>
+    </div>
+    <div class="form-group">
+        <label>Movie</label>
+        <div class="tt-container">
+            <input id="movie" name="movie" data-rule-atLeastOneMovie="true" type="text" value="" class="form-control" />
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-4">
+            <ul id="movies" class="list-group"></ul>
+        </div>
+    </div>
+    <button class="btn btn-primary">Submit</button>
+</form>
+@section scripts
+{
+    @Scripts.Render("~/bundles/jqueryval")
+    <script>
+
+        $(document).ready(function () {
+            var vm = {
+                movieIds: []
+            };
+            var customers = new Bloodhound(
+                {
+                    datumTokenizer: Bloodhound.tokenizers.obj.whitespace('name'), //tokenize customer's name
+                    queryTokenizer: Bloodhound.tokenizers.whitespace,
+                    remote:
+                    {
+                        url: '/api/customers?query=%QUERY',
+                        wildcard: '%QUERY'
+                    }
+                }
+            );
+            $('#customer').typeahead(
+                //typeahead configuration
+                {
+                    minLength: 3,
+                    highlight: true
+                },
+                //object to work on (bloodhound object)
+                {
+                    name: 'customers',
+                    display: 'name',
+                    source: customers
+                }).on("typeahead:select", function (e, customer) {
+                    vm.customerId = customer.id;
+                    //////
+                    //I had to nest the bloodhound object as well as  the type ahead logic on movies textbox
+                    //because I needed to get the customer Id
+                    //after the typeahead select event of the customer textbox
+                    //and set it in the vm and recreate the bloodhound object
+                    //and re-adding the type ahead listener to the movies textbox
+                    var movies = new Bloodhound(
+                        {
+                            datumTokenizer: Bloodhound.tokenizers.obj.whitespace('name'), //tokenize movie's name
+                            queryTokenizer: Bloodhound.tokenizers.whitespace,
+                            remote:
+                            {
+                                // url: '/api/NewRentals?id=' + vm.customerId + '&query=%QUERY',
+                                url: '/api/NewRentals?Id=' + vm.customerId + '&query=%QUERY',
+                                wildcard: '%QUERY'
+                            }
+                        }
+                    );
+
+                    $('#movie').typeahead(
+                        //typeahead configuration
+                        {
+                            //I'd rather return all customer's rentals on click
+                            minLength: 0,
+                            highlight: true
+                        },
+                        //object to work on (bloodhound object)
+                        {
+                            name: 'movies',
+                            display: 'name',
+                            source: movies
+                        }).on("typeahead:select", function (e, movie) {
+                            //alert(movie.id);
+                            if (!vm.movieIds.includes(movie.id)) {
+                                $("#movies").append("<li class='list-group-item'>" + movie.name + "</li>");
+                                $("#movie").typeahead("val", "");
+                                vm.movieIds.push(movie.id);
+                            }
+
+                        });
+
+                    ////
+
+                });
+
+            //custom validation if customer don't exist
+            $.validator.addMethod("validCustomer",
+                function () {
+                    return vm.customerId && vm.customerId !== 0;
+                },
+                "Please select a valid customer.");
+
+            //custom validation if no movie selected
+            $.validator.addMethod("atLeastOneMovie",
+                function () {
+                    return vm.movieIds.length > 0;
+                },
+                "Please select at least one movie.");
+
+            //use jquery val to validate our form
+            var validator = $("#returnRental").validate({
+                submitHandler: function () {
+                    $.ajax({
+                        url: "/api/ReturnRentals/",
+                        method: "post",
+                        data: vm
+                    })
+                        .done(function () {
+                            toastr.success("Rentals successfully returned. ");
+
+                            //clearing the form, using typeahead
+                            //we can't use JQuery because we applied typeahead on it so we use type ahead
+                            $("#customer").typeahead("val", "");
+                            $("#movie").typeahead("val", "");
+
+                            //clear the list of movies
+                            $("#movies").empty();
+
+                            //empty the movies Array
+                            vm = { movieIds: [] };
+
+                            //reset the form using the validator object that the validate method returns
+                            validator.resetForm();
+                        })
+                        .fail(function () {
+                            toastr.error("Something unexpected happened.");
+
+                        });
+                    //prevent normal html submit, the new approach
+                    return false;
+                }
+            });
+        });
+    </script>
+}

@@ -1,0 +1,54 @@
+﻿@model IEnumerable<Vidly.Models.Rental>
+@{
+    ViewBag.Title = "Retals";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="navbar-fix-wrap-h">
+    <h2>Rentals</h2>
+</div>
+<div class="row">
+    <div class="col-md-4">
+        @Html.ActionLink("New Rental", "New", "Rentals", null, new { @class = "btn btn-primary btn-lg", @Style = "margin-bottom:10px;" })
+    </div>
+    <div class="col-md-4">
+        @Html.ActionLink("Check in Rental", "ReturnRental", "Rentals", null, new { @class = "btn btn-primary btn-lg", @Style = "margin-bottom:10px;" })
+    </div>
+    <div class="col-md-4">
+        @Html.ActionLink("Past Rentals", "PastRentals", "Rentals", null, new { @class = "btn btn-primary btn-lg", @Style = "margin-bottom:10px;" })
+    </div>
+</div>
+<table id="tableRentals" class="table table-bordered table-hover">
+    <thead>
+        <tr>
+            <td>Customer</td>
+            <td>Movie</td>
+        </tr>
+    </thead>
+    <tbody>
+
+        @foreach (var rental in Model)
+        {
+            <tr>
+                <td>
+                    @Html.ActionLink(@rental.Customer.Name, "Edit", "Customers", new { id = rental.Customer.Id }, null)
+                </td>
+                <td>
+                    @Html.ActionLink(@rental.Movie.Name, "Edit", "Movies", new { id = rental.Movie.Id }, null)
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+@section scripts
+{
+    <script>
+        $(document).ready(function () {
+            $("#tableRentals").DataTable({
+                "drawCallback": function () {
+                    fixDataTables();
+                }
+            });
+        });
+    </script>
+}

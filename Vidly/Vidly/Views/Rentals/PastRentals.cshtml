@@ -1,0 +1,43 @@
+﻿@model IEnumerable<Vidly.Models.Rental>
+@{
+    ViewBag.Title = "Past Rentals";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Past Rentals</h2>
+
+
+<table id="tableRentals" class="table table-bordered table-hover">
+    <thead>
+        <tr>
+            <td>Customer</td>
+            <td>Movie</td>
+        </tr>
+    </thead>
+    <tbody>
+
+        @foreach (var rental in Model)
+        {
+            <tr>
+                <td>
+                    @Html.ActionLink(@rental.Customer.Name, "Edit", "Customers", new { id = rental.Customer.Id }, null)
+                </td>
+                <td>
+                    @Html.ActionLink(@rental.Movie.Name, "Edit", "Movies", new { id = rental.Movie.Id }, null)
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+@section scripts
+{
+    <script>
+        $(document).ready(function () {
+            $("#tableRentals").DataTable({
+                "drawCallback": function () {
+                    fixDataTables();
+                }
+            });
+        });
+    </script>
+}

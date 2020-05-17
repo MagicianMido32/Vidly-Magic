@@ -1,0 +1,391 @@
+﻿@using Vidly.Models
+@model Vidly.ViewModels.HomePageViewModel
+@{
+    ViewBag.Title = "Home";
+}
+
+@{
+    Layout = null;
+    // The code will get ugly this way, would rather keep it simple
+    var canManageUsers = User.IsInRole(RoleName.CanManageUsers);
+    var canManageMovies = User.IsInRole(RoleName.CanManageMovies);
+    //var isAuthenticated = User.Identity.IsAuthenticated;
+}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewBag.Title - Vidly!</title>
+    @*put in top so it will be rendered before the content so it appears good*@
+    @Styles.Render("~/Content/css")
+    @Styles.Render("~/Content/homepage") @*you can use link for simplicity*@
+
+    @*must be put in  top*@
+    @Scripts.Render("~/bundles/modernizr")
+</head>
+<body>
+    <!-- navbar -->
+
+    @Html.Partial("_NavBar")
+
+    <!-- home main buttons -->
+    <div class="container homepage-main">
+        <section id="homepage-main">
+            <div class="container">
+                <div class="jumbotron">
+                    <h1><span class="fa fa-photo-video"></span> Vidly!</h1>
+                    <p class="lead">Welcome To Vidly! the movie rental app</p>
+                </div>
+            </div>
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-1"></div> @*had to do this to center stuff , it's common in bootstrap 3*@
+                    <div class="col-md-3">
+                        <h2>Movies</h2>
+                        <p>@Html.ActionLink("Movies", "Index", "Movies", null, new { @class = "btn btn-default btn-homepage " })</p>
+                        <p>@Html.ActionLink("New Movie", "New", "Movies", null, new { @class = "btn btn-default btn-homepage " })</p>
+                    </div>
+                    <div class="col-md-1"></div>
+                    <div class="col-md-3">
+                        <h2>Customers</h2>
+                        <p>@Html.ActionLink("Customers", "Index", "Customers", null, new { @class = "btn btn-default btn-homepage " })</p>
+                        <p>@Html.ActionLink("New Customer", "New", "Customers", null, new { @class = "btn btn-default btn-homepage " })</p>
+                    </div>
+                    <div class="col-md-1"></div>
+
+                    <div class="col-md-3">
+                        <h2>Rentals</h2>
+                        <p>@Html.ActionLink("Rentals", "Index", "Rentals", null, new { @class = "btn btn-default btn-homepage " })</p>
+                        <p>@Html.ActionLink("New Rental", "New", "Rentals", null, new { @class = "btn btn-default btn-homepage " })</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- home movies gallery -->
+    <section id="homepage-movies" class="homepage-movies">
+        <div class="container">
+
+            @foreach (var movie in Model.Movies)
+            {
+
+                var imgSrc = movie.Id.ToString() + ".jpg";
+                <div class="col-xs-12 col-sm-6 col-md-4 col-lg-3">
+                    <a class="modal-toggle" data-toggle="modal" data-target="#myModal" data-movie-id="@movie.Id">
+                        <img class="img-thumbnail img-responsive" src="~/Content/Images/@imgSrc" />
+                    </a>
+                </div>
+            }
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+
+        <div class="footer-social text-center container-fluid">
+            <div class="row text-center">
+                <div class="col-md-3"></div>
+                <div class="col-md-6">
+                    <div class="footer-social-buttons">
+                        <a target="_blank" href="https://www.facebook.com/RootedToReality"><i class="fab fa-facebook"></i></a>
+                        <a target="_blank" href="https://twitter.com/MohammedLSayed2"><i class="fab fa-twitter"></i></a>
+                        <a target="_blank" href="https://www.youtube.com/channel%2FUCgiLBTuI_uQLAGcPMOH4XAA"><i class="fab fa-youtube"></i></a>
+                        <a target="_blank" href="https://www.linkedin.com/in/mohammed-al-sayed-7bb10716b"><i class="fab fa-linkedin"></i></a>
+                        <a target="_blank" href="https://github.com/MagicianMido32"><i class="fab fa-github"></i></a>
+                    </div>
+                    <div class="col-md-3"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer Links -->
+        <div class="footer-links container-fluid">
+            <div class="row">
+                <div class="col-md-1"></div>
+                <div class="col-md-5">
+                    <div class="footer-infos">
+                        <div class="row">
+                            <h3 class="text-uppercase">Vildy!</h3>
+                            <hr class="hr-footer pull-left" />
+                        </div>
+                        <div class="row">
+                            <p class="lead paragraph-info">
+                                Vidly is a movie rental app where you can add, edit and delete a movie with a thumbnail,
+                                you can add, edit and delete customers, you can rent movies to a customer, check a movie in
+                                and set a customer as delinquent,
+                                you can view the list of movies in the main page.<br />
+                                All CRUD operations are implemented with Ajax and WebApi, and all designs are self-made.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-1"></div>
+                <div class="footer-infos pull-left">
+                    <div class="col-md-5">
+                        <div class="row">
+                            <h3 class="text-uppercase">Links</h3>
+                            <hr class="hr-footer pull-left" />
+                        </div>
+                        <div class="row">
+                            <div class="footer-links-a">
+                                @Html.ActionLink("Customers", "Index", "Customers")
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="footer-links-a">
+                                @Html.ActionLink("Movies", "Index", "Movies")
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="footer-links-a">
+                                @Html.ActionLink("Rentals", "Index", "Rentals")
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Footer Copyright-->
+        <div class="footer-copy text-center container-fluid">
+            <h3>&copy; @DateTime.Now.Year - Vidly!</h3>
+        </div>
+    </footer>
+
+    <!--Modal-->
+    <section id="homepage-modal">
+        <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button style="color: white;" type="button" class="close" data-dismiss="modal">&times;</button>
+                        <h4 class="modal-title" id="exampleModalLabel">Movie details</h4>
+                    </div>
+                    <div class="modal-body" id="modal-body"></div>
+                    <div class="modal-footer" id="modal-footer">
+                        @**@
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!------------------------------------------------------>
+    @*
+        @Scripts.Render("~/bundles/jquery")
+        @Scripts.Render("~/bundles/bootstrap")
+        we merged them into a single bundle which represents third party libraries
+    *@
+
+    @Scripts.Render("~/bundles/lib")
+
+    @Scripts.Render("~/bundles/fontawesome")
+    @Styles.Render("~/Content/fontawesome")
+</body>
+</html>
+<script>
+
+    $(document).ready(function() {
+        checkScroll();
+        $(window).scroll(checkScroll);
+    });
+
+    //for nav bar , in bootstrap 4 there's a scrolled class that you can target when the navbar is scrolled , check museum of candy
+    //https://stackoverflow.com/questions/23706003/changing-nav-bar-color-after-scrolling
+    $(function () {
+        $(document).scroll(function () {
+            var $nav = $(".navbar-fixed-top");
+            $nav.toggleClass('scrolled', $(this).scrollTop() > $nav.height());
+        });
+    });
+
+    //fix when reloading the page, and it's scrolled , the navbar stays transparent
+    //https://stackoverflow.com/questions/31829978/detect-if-page-is-scrolled-on-document-load
+    function checkScroll(){
+        var $nav = $(".navbar-fixed-top");
+        $nav.toggleClass('scrolled', $(this).scrollTop() > $nav.height());
+    }
+
+    $('.modal-toggle').on('click',
+        function () {
+            //source
+            //http://zetcode.com/javascript/jsonurl/
+            var button = $(this);
+            var id = button.attr("data-movie-id");
+            var infoModal = $('#myModal');
+            $.getJSON("/api/movies/" + id,
+                function (item) {
+                    var parsedDate = dateParse(item.releaseDate);
+                    var modalBodyHtmlWithTrailer = `
+    <div class="container">
+        <div class="row">
+            <div class="col-xs-6 col-sm-5 col-md-4 col-lg-3">
+
+                <img style="margin-top:10px;" src="/Content/Images/${item.id}.jpg" alt="image" class="img-responsive" />
+            </div>
+            <div class="col-xs-6 col-sm-4 col-md-3 col-lg-3">
+                <form>
+                    <div class="form-group">
+                        <label class="modal-label">Name:</label>
+                        <label class="form-control">${item.name}</label>
+
+                        <label class="modal-label">Genre:</label>
+                        <label class="form-control">${item.genre.name}</label>
+
+                        <label class="modal-label">Release Date:</label>
+                        <label class="form-control">${parsedDate}</label>
+
+                        <label class="modal-label"> Number In Stock:</label>
+                        <label class="form-control">${item.numberInStock}</label>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <div class="row">
+            <label class="modal-label" style="margin-left:15px;">Trailer:</label>
+        </div>
+        <div class="row">
+            <div class="col-xs-12 col-sm-8 col-md-6 col-lg-6">
+                <div class="embed-responsive embed-responsive-16by9">
+                    <iframe class="embed-responsive-item" src="${item.trailerLink}"
+                        allowfullscreen></iframe>
+                </div>
+            </div>
+        </div>
+    </div>
+
+`;
+                    //I don't like this
+
+                    var modalBodyHtmlNoTrailer = `
+    <div class="container">
+        <div class="row">
+            <div class="col-xs-6 col-sm-5 col-md-4 col-lg-3">
+
+                <img style="margin-top:10px;" src="/Content/Images/${item.id}.jpg" alt="image" class="img-responsive" />
+            </div>
+            <div class="col-xs-6 col-sm-4 col-md-3 col-lg-3">
+                <form>
+                    <div class="form-group">
+                        <label class="modal-label">Name:</label>
+                        <label class="form-control">${item.name}</label>
+
+                        <label class="modal-label">Genre:</label>
+                        <label class="form-control">${item.genre.name}</label>
+
+                        <label class="modal-label">Release Date:</label>
+                        <label class="form-control">${parsedDate}</label>
+
+                        <label class="modal-label"> Number In Stock:</label>
+                        <label class="form-control">${item.numberInStock}</label>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+`;
+                    //var htmlData = `Name : ${item.name}<br>
+                    //                Genre: ${item.genre.name}<br>
+                    //                Release Date :${item.releaseDate}<br>
+                    //                Number In Stock: ${item.numberInStock}`;
+
+                    var modalFooterHtmlMovies = ` <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                        <a href="/Movies/Edit/${item.id}" class="btn btn-default pull-left">Edit Movie</a>`;
+
+                    var modalFooterHtmlNormal =' <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>';
+
+                    if (item.trailerLink) { // trailer has value
+                        infoModal.find('#modal-body').html(modalBodyHtmlWithTrailer);
+
+                    } else {
+                        infoModal.find('#modal-body').html(modalBodyHtmlNoTrailer);
+
+                    }
+
+                    @if (canManageMovies){
+                        @:infoModal.find('#modal-footer').html(modalFooterHtmlMovies);
+                    }
+                    else
+                    {
+                        @:infoModal.find('#modal-footer').html(modalFooterHtmlNormal);
+
+                    }
+
+                    infoModal.modal();
+
+                });
+        });
+
+    //fix destroying the modal on close because the youtube video keeps playing
+    $("#myModal").on('hidden.bs.modal', function () {
+        var newModalHtml = `
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button style="color: white;" type="button" class="close" data-dismiss="modal">&times;</button>
+                        <h4 class="modal-title" id="exampleModalLabel">Movie details</h4>
+                    </div>
+                    <div class="modal-body" id="modal-body"></div>
+                    <div class="modal-footer" id="modal-footer">
+                    </div>
+                </div>
+            </div>
+`;
+
+        $(this).html(newModalHtml);
+    });
+    //date parse in modal
+    function dateParse(dateObject) {
+        var d = new Date(dateObject);
+        var day = d.getDate();
+        var month = d.getMonth() + 1;
+        var year = d.getFullYear();
+        if (day < 10) {
+            day = "0" + day;
+        }
+        if (month < 10) {
+            month = "0" + month;
+        }
+        var date = day + "/" + month + "/" + year;
+
+        return date;
+    };
+</script>
+
+@{
+    #region dumpCode
+    @*@{
+            //stupid code, wrap each 4 images in a row , no need for that
+            var arr = SplitToSublists(Model.Movies.ToList(), 4);
+
+            foreach (var smallArr in arr)
+            {
+                <div class="row">
+                    @{
+                        foreach (var movie in smallArr)
+                        {
+                            var imgSrc = movie.Id.ToString() + ".jpg";
+                            <div class="col-xs-6 col-md-4 col-lg-3">
+
+                                <a class="modal-toggle" data-toggle="modal" data-target="#myModal" data-movie-id="@movie.Id">
+                                    <img class="img-thumbnail img-responsive" src="~/Content/Images/@imgSrc" />
+                                </a>
+                            </div>
+                        }
+                    }
+                </div>
+            }
+
+            List<List<Movie>> SplitToSublists(List<Movie> source, int size)
+            {
+                return source
+                    .Select((x, i) => new { Index = i, Value = x })
+                    .GroupBy(x => x.Index / size)
+                    .Select(x => x.Select(v => v.Value).ToList())
+                    .ToList();
+            }
+        }*@
+    #endregion
+}

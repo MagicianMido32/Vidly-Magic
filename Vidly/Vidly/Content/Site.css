@@ -1,0 +1,62 @@
+﻿body {
+    margin: 0;
+    padding: 0;
+    font-size: 17px;
+    font-family: 'Open Sans', sans-serif;
+    /* background-image: url('background.svg'); */
+}
+
+/* Set padding to keep content from hitting the edges */
+.body-content {
+    padding-left: 15px;
+    padding-right: 15px;
+}
+
+/* Override the default bootstrap behavior where horizontal description lists
+   will truncate terms that are too long to fit in the left column
+*/
+.dl-horizontal dt {
+    white-space: normal;
+}
+
+/* Set width on the form input elements since they're 100% wide by default */
+input,
+select,
+textarea {
+    max-width: 280px;
+}
+
+.field-validation-error,
+/* jquery val*/
+label.error {
+    color: red;
+}
+
+.input-validation-error,
+/* jquery val*/
+input.error {
+    border: 2px solid red;
+}
+
+.footer {
+    position: fixed;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+    background-color: #0951e6;
+    color: white;
+    text-align: center;
+    border: 1px solid #e6e6e6;
+    border-width: 4px 1px 0px 1px;
+}
+
+.navbar-fix-wrap-h {
+    margin-top: 65px;
+}
+
+
+@media (max-width:990px) and (min-width:768px) {
+    .navbar-fix-wrap-h {
+        margin-top: 110px;
+    }
+}

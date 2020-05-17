@@ -1,0 +1,61 @@
+﻿@model IEnumerable<Vidly.ViewModels.ApplicationUserViewModel>
+@{
+    ViewBag.Title = "Users";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="navbar-fix-wrap-h">
+    <h2>Users</h2>
+</div>
+<table id="tableUsers" class="table table-hover table-bordered">
+
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Delete?</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var user in Model)
+        {
+            <tr>
+                @* <td>@user.UserName</td> *@
+                <td>
+                    @Html.ActionLink(@user.UserName, "EditUser", "UsersManagement", new { Id = user.Id }, null)
+                </td>
+                <td>
+                    @* @Html.ActionLink("Edit", "EditUser", "UsersManagement", new { Id = user.Id }, new { @class = "btn btn-success btn-custom " }) | *@
+                    <button class="btn btn-danger btn-custom js-delete" data-user-id="@user.Id">Delete</button>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+@section scripts
+{
+    <script>
+
+        $(document).ready(function () {
+            var table = $("#tableUsers").DataTable();
+            fixDataTables();
+            //add click event to all .js-delete in the #movies table
+            $("#tableUsers .js-delete").on("click",
+                function () {
+                    var button = $(this);
+                    var id = button.attr("data-user-id");
+                    bootbox.confirm("Are you sure you want to delete this user ?",
+                        function (result) {
+                            if (result) {
+                                $.ajax({
+                                    url: "/api/UsersManagement/" + id,
+                                    method: "DELETE",
+                                    success: function () {
+                                        table.row(button.parents("tr")).remove().draw();
+                                    }
+                                });
+                            }
+                        });
+                });
+        });
+    </script>
+}
