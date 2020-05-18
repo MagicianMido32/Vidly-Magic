@@ -14,3 +14,12 @@ A video rental app built in ASP.net MVC
 
 >[Try it here !](https://vidlymagic.azurewebsites.net/)
 
+> ![UI](https://raw.githubusercontent.com/MagicianMido32/Vidly-Magic/master/1.PNG )
+
+> ![UI](https://raw.githubusercontent.com/MagicianMido32/Vidly-Magic/master/2.PNG )
+
+> ![UI](https://raw.githubusercontent.com/MagicianMido32/Vidly-Magic/master/3.PNG )
+
+> ![UI](https://raw.githubusercontent.com/MagicianMido32/Vidly-Magic/master/4.PNG )
+
+> ![UI](https://raw.githubusercontent.com/MagicianMido32/Vidly-Magic/master/5.PNG )
